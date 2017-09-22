@@ -1306,9 +1306,6 @@ installPiholeWeb() {
   install -D ${PI_HOLE_LOCAL_REPO}/advanced/{index,blockingpage}.* /var/www/html/pihole/
   echo -e "${OVER}  ${TICK} ${str}"
 
-  # Set user/group for block page
-  chown -R ${LIGHTTPD_USER}:${LIGHTTPD_GROUP} /var/www/html/pihole/
-
   local str="Backing up index.lighttpd.html"
   echo -ne "  ${INFO} ${str}..."
   # If the default index file exists,
@@ -1696,9 +1693,6 @@ clone_or_update_repos() {
         { echo -e "  ${COL_LIGHT_RED}Unable to reset ${webInterfaceDir}, exiting installer${COL_NC}"; \
           exit 1; \
         }
-
-      # Reset user/group for web ui
-      chown -R ${LIGHTTPD_USER}:${LIGHTTPD_GROUP} ${webInterfaceDir}
     fi
   # Otherwise, a repair is happening
   else
@@ -1714,11 +1708,9 @@ clone_or_update_repos() {
         { echo -e "  ${COL_LIGHT_RED}Unable to clone ${webInterfaceGitUrl} into ${webInterfaceDir}, exiting installer${COL_NC}"; \
           exit 1; \
         }
-
-        # Set user/group for web ui
-        chown -R ${LIGHTTPD_USER}:${LIGHTTPD_GROUP} ${webInterfaceDir}
       fi
   fi
+
 }
 
 # Download and install FTL binary
@@ -2064,6 +2056,12 @@ main() {
 
   # If the Web server was installed,
   if [[ "${INSTALL_WEB}" == true ]]; then
+
+    # before we start/lighttpd Set user/group for web ui
+    chown -R ${LIGHTTPD_USER}:${LIGHTTPD_GROUP} ${webInterfaceDir}
+
+    # Set user/group for block page
+    chown -R ${LIGHTTPD_USER}:${LIGHTTPD_GROUP} /var/www/html/pihole/
 
     if [[ "${LIGHTTPD_ENABLED}" == "1" ]]; then
       start_service lighttpd
