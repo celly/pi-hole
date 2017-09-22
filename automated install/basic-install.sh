@@ -1696,6 +1696,9 @@ clone_or_update_repos() {
         { echo -e "  ${COL_LIGHT_RED}Unable to reset ${webInterfaceDir}, exiting installer${COL_NC}"; \
           exit 1; \
         }
+
+      # Reset user/group for web ui
+      chown -R ${LIGHTTPD_USER}:${LIGHTTPD_GROUP} ${webInterfaceDir}
     fi
   # Otherwise, a repair is happening
   else
